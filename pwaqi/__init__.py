@@ -6,7 +6,7 @@ def findStationCodesByCity(cityName):
 	r = requests.get("https://wind.waqi.info/nsearch/station/" + cityName)
 
 	if r.status_code == 200:
-		return r.json()["results"]
+		return [result["x"] for result in r.json()["results"]]
 	else:
 		return []
 
