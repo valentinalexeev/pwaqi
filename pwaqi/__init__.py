@@ -46,7 +46,13 @@ def getStationObservation(stationCode, locationName='', language = "en"):
 			})
 
 	if r.status_code == 200:
-		obsJson = r.json()["rxs"]["obs"][0]["msg"]
+		osbJson = None
+		for res in r.json()["rxs"]["obs"]:
+			if "msg" in res:
+				obsJson = res["msg"]
+
+		if not obsJson:
+			return {}
 
 		def iaqiTranslate(iaqi):
 			return {'p': iaqi['p'], 'cur': iaqi['v'][0], 'min': iaqi['v'][1], 'max': iaqi['v'][2]}
