@@ -46,7 +46,7 @@ def getStationObservation(stationCode, locationName='', language = "en"):
 			})
 
 	if r.status_code == 200:
-		osbJson = None
+		obsJson = None
 		for res in r.json()["rxs"]["obs"]:
 			if "msg" in res:
 				obsJson = res["msg"]
