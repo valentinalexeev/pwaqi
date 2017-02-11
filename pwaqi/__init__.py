@@ -21,7 +21,7 @@ def getJSKey(locationName):
 		todecode = r.text[pos+20:pos+76]
 		key = decoder(todecode)
 		print("key = {}".format(key))
-		return key 
+		return key
 	return ""
 
 def getToken(stationCode):
@@ -33,7 +33,7 @@ def getUID():
 	return  "abcde" + datetime.now().strftime("%s000")
 
 def getStationObservation(stationCode, locationName='', language = "en"):
-	r = requests.post("https://waqi.info/api/feed/@" + str(stationCode) + "/obs." + language + ".json",
+	r = requests.post('https://api.waqi.info/api/feed/@%d/obs.%s.json' % (stationCode, language),
 		data = {
 #			'token': getToken(stationCode),
 #			'key': getJSKey(locationName),
