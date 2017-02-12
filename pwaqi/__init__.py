@@ -1,36 +1,16 @@
 import requests
-from urllib.parse import unquote
-from datetime import datetime
 
-def findStationCodesByCity(cityName):
-	r = requests.get("https://wind.waqi.info/nsearch/station/" + cityName)
+def findStationCodesByCity(cityName, token):
+	r = requests.get('https://api.waqi.info/search/',
+		params = {
+			'token': token,
+			'keyword': cityName
+		})
 
-	if r.status_code == 200:
-		return [result["x"] for result in r.json()["results"]]
+	if r.status_code == 200 and r.json()["status"] == "ok":
+		return [result["uid"] for result in r.json()["data"]]
 	else:
 		return []
-
-def decoder(todecode):
-	decoded = [chr(ord(c)-1) for c in unquote(todecode)]
-	return "".join(decoded)
-
-def getJSKey(locationName):
-	r = requests.get("http://aqicn.org/city/" + locationName)
-	if r.status_code == 200:
-		pos = r.text.find("decodeURIComponent")
-		todecode = r.text[pos+20:pos+76]
-		key = decoder(todecode)
-		print("key = {}".format(key))
-		return key
-	return ""
-
-def getToken(stationCode):
-	rToken = requests.get("https://waqi.info/api/token/" + str(stationCode))
-	print("token = {}".format(unquote(rToken.json()["rxs"]["obs"][0]["msg"]["token"])))
-	return unquote(rToken.json()["rxs"]["obs"][0]["msg"]["token"])
-
-def getUID():
-	return  "abcde" + datetime.now().strftime("%s000")
 
 def getStationObservation(stationCode, token, locationName='', language = "en"):
 	r = requests.get('https://api.waqi.info/api/feed/@%d/obs.%s.json' % (stationCode, language),
