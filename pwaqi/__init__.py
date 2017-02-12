@@ -32,17 +32,10 @@ def getToken(stationCode):
 def getUID():
 	return  "abcde" + datetime.now().strftime("%s000")
 
-def getStationObservation(stationCode, locationName='', language = "en"):
-	r = requests.post('https://api.waqi.info/api/feed/@%d/obs.%s.json' % (stationCode, language),
-		data = {
-#			'token': getToken(stationCode),
-#			'key': getJSKey(locationName),
-#			'uid': getUID(),
-#			'rqc': '2'
-			},
-		headers = {
-			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.87 Safari/537.36 OPR/41.0.2353.56',
-#			'referer': 'http://aqicn.org/city' + locationName
+def getStationObservation(stationCode, token, locationName='', language = "en"):
+	r = requests.get('https://api.waqi.info/api/feed/@%d/obs.%s.json' % (stationCode, language),
+		params = {
+			'token': token
 			})
 
 	if r.status_code == 200:
