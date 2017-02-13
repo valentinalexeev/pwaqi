@@ -6,8 +6,10 @@ Please refer to AQICN website to obtain token that must be used for access.
 """
 import requests
 
-API_ENDPOINT_SEARCH = 'https://api.waqi.info/search/'
-API_ENDPOINT_OBS = 'https://api.waqi.info/api/feed/@%d/obs.%s.json'
+API_ENDPOINT = 'https://api.waqi.info/'
+API_ENDPOINT_SEARCH = API_ENDPOINT + 'search/'
+API_ENDPOINT_OBS = API_ENDPOINT + 'api/feed/@%d/obs.%s.json'
+API_ENDPOINT_GEO = API_ENDPOINT + 'feed/geo:%d;%d/'
 
 
 def findStationCodesByCity(city_name, token):
@@ -23,6 +25,39 @@ def findStationCodesByCity(city_name, token):
         return [result["uid"] for result in req.json()["data"]]
     else:
         return []
+
+
+def get_location_observation(lat, lng, token):
+    """Lookup observations by geo coordinates."""
+    req = requests.get(
+        API_ENDPOINT_GEO % (lat, lng),
+        params={
+            'token': token
+        })
+
+    if req.station_code == 200 and req.json()["status"] == "ok":
+        return parse_observation_response(req.json()["data"])
+    return {}
+
+
+def parse_observation_response(json):
+    """Decode AQICN observation response JSON into python object."""
+    def iaqi_translate(iaqi):
+        """Helper to translate AQI data items."""
+        return {
+            'p': iaqi['p'],
+            'cur': iaqi['v'][0],
+            'min': iaqi['v'][1],
+            'max': iaqi['v'][2]
+            }
+
+    return {
+        'city': json.get('city', ''),
+        'aqi': json['aqi'],
+        'iaqi': [iaqi_translate(item) for item in json['iaqi']],
+        'dominentpol': json.get("dominentpol", ''),
+        'time': json['time']['v']
+    }
 
 
 def getStationObservation(station_code, token, language="en"):
@@ -45,22 +80,6 @@ def getStationObservation(station_code, token, language="en"):
 
         if not obs_json:
             return {}
-
-        def iaqi_translate(iaqi):
-            """Helper to translate AQI data items."""
-            return {
-                'p': iaqi['p'],
-                'cur': iaqi['v'][0],
-                'min': iaqi['v'][1],
-                'max': iaqi['v'][2]
-                }
-
-        return {
-            'city': obs_json.get('city', ''),
-            'aqi': obs_json['aqi'],
-            'iaqi': [iaqi_translate(item) for item in obs_json['iaqi']],
-            'dominentpol': obs_json.get("dominentpol", ''),
-            'time': obs_json['time']['v']
-        }
+        return parse_observation_response(obs_json)
     else:
         return {}
