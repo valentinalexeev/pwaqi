@@ -1,0 +1,6 @@
+[MASTER]
+reports=no
+
+[EXCEPTIONS]
+# API compatibility
+good-names=findStationCodesByCity,getStationObservation
