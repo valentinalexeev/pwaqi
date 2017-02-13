@@ -1,6 +1,8 @@
+"""A Python wrapper for AQICN API to search and retrieve Air Quality Index data."""
 import requests
 
 def findStationCodesByCity(cityName, token):
+	"""Lookup AQI database for station codes in a given city."""
 	r = requests.get('https://api.waqi.info/search/',
 		params = {
 			'token': token,
@@ -12,7 +14,11 @@ def findStationCodesByCity(cityName, token):
 	else:
 		return []
 
-def getStationObservation(stationCode, token, locationName='', language = "en"):
+def getStationObservation(stationCode, token, language = "en"):
+	"""Request station data for a specific station identified by code.
+	
+	A language parameter can also be specified to translate location information (default: "en")
+	"""
 	r = requests.get('https://api.waqi.info/api/feed/@%d/obs.%s.json' % (stationCode, language),
 		params = {
 			'token': token
