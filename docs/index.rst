@@ -11,6 +11,11 @@ Welcome to pwaqi's documentation!
    :caption: Contents:
 
 
+.. automodule:: pwaqi
+
+.. autofunction:: findStationCodesByCity
+.. autofunction:: getStationObservation
+
 
 Indices and tables
 ==================
