@@ -12,9 +12,7 @@ Welcome to pwaqi's documentation!
 
 
 .. automodule:: pwaqi
-
-.. autofunction:: findStationCodesByCity
-.. autofunction:: getStationObservation
+   :members:
 
 
 Indices and tables
