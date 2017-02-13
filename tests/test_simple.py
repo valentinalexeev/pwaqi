@@ -10,8 +10,17 @@ def test_search():
 def test_observations():
     import pwaqi
 
-    station = 8190
-    res = pwaqi.getStationObservation(station, 'demo')
+    station = 1437
+    res = pwaqi.get_station_observation(station, 'demo')
 
     assert 'city' in res
-    assert station == res['city']['idx']
+    assert station == res['idx']
+
+
+def test_no_station():
+    import pwaqi
+
+    station = 1
+    res = pwaqi.get_station_observation(station, 'demo')
+
+    assert res['idx'] == 1437

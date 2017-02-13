@@ -4,11 +4,12 @@ A Python wrapper for AQICN API.
 The library can be used to search and retrieve Air Quality Index data.
 Please refer to AQICN website to obtain token that must be used for access.
 """
+import logging
 import requests
 
 API_ENDPOINT = 'https://api.waqi.info/'
 API_ENDPOINT_SEARCH = API_ENDPOINT + 'search/'
-API_ENDPOINT_OBS = API_ENDPOINT + 'api/feed/@%d/obs.%s.json'
+API_ENDPOINT_OBS = API_ENDPOINT + 'feed/@%d/'
 API_ENDPOINT_GEO = API_ENDPOINT + 'feed/geo:%d;%d/'
 
 
@@ -35,51 +36,41 @@ def get_location_observation(lat, lng, token):
             'token': token
         })
 
-    if req.station_code == 200 and req.json()["status"] == "ok":
+    if req.status_code == 200 and req.json()["status"] == "ok":
         return parse_observation_response(req.json()["data"])
     return {}
 
 
 def parse_observation_response(json):
     """Decode AQICN observation response JSON into python object."""
-    def iaqi_translate(iaqi):
-        """Helper to translate AQI data items."""
-        return {
-            'p': iaqi['p'],
-            'cur': iaqi['v'][0],
-            'min': iaqi['v'][1],
-            'max': iaqi['v'][2]
-            }
+    logging.debug(json)
 
-    return {
+    iaqi = json['iaqi']
+    result = {
+        'idx': json['idx'],
         'city': json.get('city', ''),
         'aqi': json['aqi'],
-        'iaqi': [iaqi_translate(item) for item in json['iaqi']],
         'dominentpol': json.get("dominentpol", ''),
-        'time': json['time']['v']
+        'time': json['time']['s'],
+        'iaqi': [{'p': item, 'v': iaqi[item]['v']} for item in iaqi]
     }
 
+    return result
 
-def getStationObservation(station_code, token, language="en"):
+
+def get_station_observation(station_code, token):
     """Request station data for a specific station identified by code.
 
     A language parameter can also be specified to translate location
     information (default: "en")
     """
     req = requests.get(
-        API_ENDPOINT_OBS % (station_code, language),
+        API_ENDPOINT_OBS % (station_code),
         params={
             'token': token
         })
 
-    if req.status_code == 200:
-        obs_json = None
-        for res in req.json()["rxs"]["obs"]:
-            if "msg" in res:
-                obs_json = res["msg"]
-
-        if not obs_json:
-            return {}
-        return parse_observation_response(obs_json)
+    if req.status_code == 200 and req.json()['status'] == "ok":
+        return parse_observation_response(req.json()['data'])
     else:
         return {}
