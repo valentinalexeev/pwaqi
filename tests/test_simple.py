@@ -1,5 +1,6 @@
 import os
 
+
 def test_search():
     import pwaqi
 
@@ -8,6 +9,7 @@ def test_search():
 
     assert len(res) > 0
     assert 8190 in res
+
 
 def test_invalid_location():
     import pwaqi
