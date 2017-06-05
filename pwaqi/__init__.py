@@ -19,8 +19,10 @@ def findStationCodesByCity(city_name, token):
         API_ENDPOINT_SEARCH,
         params={
             'token': token,
-            'keyword': city_name
-        })
+            'keyword': city_name,
+        },
+        timeout=5,
+    )
 
     if req.status_code == 200 and req.json()["status"] == "ok":
         return [result["uid"] for result in req.json()["data"]]
@@ -33,8 +35,10 @@ def get_location_observation(lat, lng, token):
     req = requests.get(
         API_ENDPOINT_GEO % (lat, lng),
         params={
-            'token': token
-        })
+            'token': token,
+        },
+        timeout=5,
+    )
 
     if req.status_code == 200 and req.json()["status"] == "ok":
         return parse_observation_response(req.json()["data"])
@@ -67,8 +71,10 @@ def get_station_observation(station_code, token):
     req = requests.get(
         API_ENDPOINT_OBS % (station_code),
         params={
-            'token': token
-        })
+            'token': token,
+        },
+        timeout=5,
+    )
 
     if req.status_code == 200 and req.json()['status'] == "ok":
         return parse_observation_response(req.json()['data'])
