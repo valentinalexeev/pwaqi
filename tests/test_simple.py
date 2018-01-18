@@ -6,11 +6,14 @@ def test_search():
     assert len(res) > 0
     assert 8190 in res['result']
 
+
 def wrong_token_search():
     import pwaqi
+
     res = pwaqi.findStationCodesByCity('bangalore', 'asjkfdhasjk')
 
     assert res['status'] == "error"
+
 
 def test_observations():
     import pwaqi
@@ -20,6 +23,7 @@ def test_observations():
 
     assert 'city' in res['result']
     assert station == res['result']['idx']
+
 
 def wrong_token_test_observations():
     import pwaqi
