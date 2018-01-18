@@ -23,9 +23,11 @@ def findStationCodesByCity(city_name, token):
         })
 
     if req.status_code == 200 and req.json()["status"] == "ok":
-        return [result["uid"] for result in req.json()["data"]]
-    else:
-        return []
+        return {"status" : "success",
+                "result" : [result["uid"] for result in req.json()["data"]]
+               }
+    elif req.status_code == 200 and req.json()["status"] == "error":
+        return req.json()
 
 
 def get_location_observation(lat, lng, token):
@@ -37,8 +39,11 @@ def get_location_observation(lat, lng, token):
         })
 
     if req.status_code == 200 and req.json()["status"] == "ok":
-        return parse_observation_response(req.json()["data"])
-    return {}
+        return {"status" : "success",
+                "result" : parse_observation_response(req.json()["data"])
+               }
+    else:
+        return req.json()
 
 
 def parse_observation_response(json):
@@ -71,6 +76,9 @@ def get_station_observation(station_code, token):
         })
 
     if req.status_code == 200 and req.json()['status'] == "ok":
-        return parse_observation_response(req.json()['data'])
+        return {"status" : "success",
+                "result" : parse_observation_response(req.json()['data'])
+               }
     else:
-        return {}
+        return req.json()
+    
